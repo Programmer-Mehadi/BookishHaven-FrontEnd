@@ -1,7 +1,18 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../../public/logo.png";
 
 const Header = () => {
+  const path = useLocation().pathname;
+  const pathList = ["/", "all-books", "add-new-book", "signin", "signup"];
+  const [activePath, setActivePath] = useState("/");
+  useEffect(() => {
+    if (path.split("/")[1]) {
+      setActivePath(path.split("/")[1]);
+    } else {
+      setActivePath("/");
+    }
+  }, [path]);
   return (
     <div>
       <nav className="bg-white">
@@ -12,7 +23,9 @@ const Header = () => {
           <button
             data-collapse-toggle="navbar-solid-bg"
             type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            className={
+              "inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            }
             aria-controls="navbar-solid-bg"
             aria-expanded="false"
           >
@@ -41,7 +54,9 @@ const Header = () => {
               <li>
                 <Link
                   to="/"
-                  className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent"
+                  className={`${
+                    activePath === pathList[0] ? "text-blue-700" : "text-black"
+                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
                   aria-current="page"
                 >
                   Home
@@ -50,7 +65,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/all-books"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className={`${
+                    activePath === pathList[1] ? "text-blue-700" : "text-black"
+                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                  aria-current="page"
                 >
                   All Books
                 </Link>
@@ -58,7 +76,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/add-new-book"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className={`${
+                    activePath === pathList[2] ? "text-blue-700" : "text-black"
+                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                  aria-current="page"
                 >
                   Add New Book
                 </Link>
@@ -66,7 +87,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/signin"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className={`${
+                    activePath === pathList[3] ? "text-blue-700" : "text-black"
+                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                  aria-current="page"
                 >
                   Sign In
                 </Link>
@@ -74,7 +98,10 @@ const Header = () => {
               <li>
                 <Link
                   to="/signup"
-                  className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className={`${
+                    activePath === pathList[4] ? "text-blue-700" : "text-black"
+                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                  aria-current="page"
                 >
                   Sign Up
                 </Link>
