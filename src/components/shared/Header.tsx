@@ -8,7 +8,11 @@ const Header = () => {
   const [activePath, setActivePath] = useState("/");
   useEffect(() => {
     if (path.split("/")[1]) {
-      setActivePath(path.split("/")[1]);
+      if (path.split("/")[1] === "home") {
+        setActivePath("/");
+      } else {
+        setActivePath(path.split("/")[1]);
+      }
     } else {
       setActivePath("/");
     }
