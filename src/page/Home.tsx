@@ -1,4 +1,5 @@
 import SimpleBookCard from "../components/Home/SimpleBookCard";
+import { useGetLastTenBooksQuery } from "../redux/api/apiSlice";
 import { HomeProduct } from "../types/product";
 
 const Home = () => {
@@ -35,6 +36,8 @@ const Home = () => {
     },
   ];
 
+  const { data, isLoading } = useGetLastTenBooksQuery(undefined);
+  console.log(data,isLoading);
   return (
     <section className="my-10 px-6 md:px-10">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
