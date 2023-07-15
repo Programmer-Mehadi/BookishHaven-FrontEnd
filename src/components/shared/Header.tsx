@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../../public/logo.png";
+import { setTokenAndUser } from "../../redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
 
 const Header = () => {
+  const { token, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const path = useLocation().pathname;
   const pathList = ["/", "all-books", "add-new-book", "signin", "signup"];
   const [activePath, setActivePath] = useState("/");
@@ -17,6 +21,18 @@ const Header = () => {
       setActivePath("/");
     }
   }, [path]);
+
+  const handleLogOut = () => {
+    console.log("logout");
+    localStorage.removeItem("bookishHaven-token");
+    dispatch(
+      setTokenAndUser({
+        token: "",
+        user: {},
+      })
+    );
+  };
+
   return (
     <div>
       <nav className="bg-white">
@@ -77,44 +93,58 @@ const Header = () => {
                   All Books
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/add-new-book"
-                  className={`${
-                    activePath === pathList[2] ? "text-blue-700" : "text-black"
-                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
-                  aria-current="page"
-                >
-                  Add New Book
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/signin"
-                  className={`${
-                    activePath === pathList[3] ? "text-blue-700" : "text-black"
-                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
-                  aria-current="page"
-                >
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/signup"
-                  className={`${
-                    activePath === pathList[4] ? "text-blue-700" : "text-black"
-                  } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
-                  aria-current="page"
-                >
-                  Sign Up
-                </Link>
-              </li>
-              <li>
-                <p className="cursor-pointer block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
-                  Logout
-                </p>
-              </li>
+              {token && user && (
+                <>
+                  <li>
+                    <Link
+                      to="/add-new-book"
+                      className={`${
+                        activePath === pathList[2]
+                          ? "text-blue-700"
+                          : "text-black"
+                      } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                      aria-current="page"
+                    >
+                      Add New Book
+                    </Link>
+                  </li>
+                  <li onClick={() => handleLogOut()}>
+                    <p className="cursor-pointer block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+                      Logout
+                    </p>
+                  </li>{" "}
+                </>
+              )}
+              {token === "" && (
+                <>
+                  <li>
+                    <Link
+                      to="/signin"
+                      className={`${
+                        activePath === pathList[3]
+                          ? "text-blue-700"
+                          : "text-black"
+                      } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                      aria-current="page"
+                    >
+                      Sign In
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/signup"
+                      className={`${
+                        activePath === pathList[4]
+                          ? "text-blue-700"
+                          : "text-black"
+                      } block py-2 pl-3 pr-4  rounded md:bg-transparent  md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent`}
+                      aria-current="page"
+                    >
+                      Sign Up
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

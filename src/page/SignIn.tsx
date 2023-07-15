@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSignInMutation } from "../redux/api/apiSlice";
+import {
+  useCheckSignInMutation,
+  useSignInMutation,
+} from "../redux/api/apiSlice";
+import { setTokenAndUser } from "../redux/features/auth/authSlice";
+import { useAppDispatch } from "../redux/hook";
 const SignIn = () => {
+  const [checkSignIn] = useCheckSignInMutation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signInMutation] = useSignInMutation();
+  const dispatch = useAppDispatch();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email === "" || password === "") {
@@ -21,10 +28,33 @@ const SignIn = () => {
       console.log(response);
       if ("data" in response) {
         if (response.data.data) {
-          toast.success(response.data.message);
+          // toast.success(response.data.message);
           const token = response.data.data.token.tokenText;
           if (token) {
             localStorage.setItem("bookishHaven-token", token);
+            checkSignIn({
+              token: token,
+            }).then((response) => {
+              console.log(response);
+              if ("data" in response) {
+                if (response.data.data) {
+                  // toast.success(response.data.message);
+                  dispatch(
+                    setTokenAndUser({
+                      token: token,
+                      user: response.data.data,
+                    })
+                  );
+                } else {
+                  toast.error(response.data.message);
+                  localStorage.removeItem("bookishHaven-token");
+                }
+              } else if ("error" in response) {
+                if ("error" in response.error) {
+                  toast.warn("Something went wrong");
+                }
+              }
+            });
           }
         } else {
           toast.error(response.data.message);

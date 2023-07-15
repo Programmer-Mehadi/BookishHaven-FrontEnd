@@ -17,7 +17,7 @@ const authSlice = createSlice({
     setTokenAndUser: (
       state,
       action: PayloadAction<{
-        token: string;
+        token: string ;
         user: object;
       }>
     ) => {
