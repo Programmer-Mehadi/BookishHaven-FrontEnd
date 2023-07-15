@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./features/auth/authSlice";
 import wishlistReducer from "./features/wishlist/wishlistSlice";
 // import logger from "./middlewares/logger";
 import { api } from "./api/apiSlice";
@@ -6,10 +7,12 @@ import { api } from "./api/apiSlice";
 const store = configureStore({
   reducer: {
     counter: wishlistReducer,
+    auth: authReducer,
     [api.reducerPath]: api.reducer,
   },
   devTools: true,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(api.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

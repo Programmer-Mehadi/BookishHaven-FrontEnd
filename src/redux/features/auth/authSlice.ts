@@ -1,20 +1,31 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-export interface wishlistSlice {
-  futureList: [];
-  currentList: [];
+export interface authSlice {
+  user: object;
+  token: string;
 }
 
-const initialState: wishlistSlice = {
-  futureList: [],
-  currentList: [],
+const initialState: authSlice = {
+  user: {},
+  token: "",
 };
 
-const wishlistSlice = createSlice({
-  name: "wishlist",
+const authSlice = createSlice({
+  name: "auth",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setTokenAndUser: (
+      state,
+      action: PayloadAction<{
+        token: string;
+        user: object;
+      }>
+    ) => {
+      state.token = action.payload.token;
+      state.user = {...action.payload.user};
+    },
+  },
 });
-export const {} = wishlistSlice.actions;
+export const { setTokenAndUser } = authSlice.actions;
 
-export default wishlistSlice.reducer;
+export default authSlice.reducer;

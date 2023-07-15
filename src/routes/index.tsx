@@ -3,10 +3,12 @@ import App from "../App";
 import Main from "../layout/Main";
 import AddBook from "../page/AddBook";
 import AllBooks from "../page/AllBooks";
+import BookDetails from "../page/BookDetails";
 import NotFound from "../page/NotFound";
 import SignIn from "../page/SignIn";
 import SignUp from "../page/SignUp";
-import BookDetails from "../page/BookDetails";
+import AuthRoute from "./AuthRoute";
+import PrivateRoute from "./PrivateRoute";
 
 const routes = createBrowserRouter([
   {
@@ -23,11 +25,19 @@ const routes = createBrowserRouter([
       },
       {
         path: "/signin",
-        element: <SignIn />,
+        element: (
+          <AuthRoute>
+            <SignIn />
+          </AuthRoute>
+        ),
       },
       {
         path: "/signup",
-        element: <SignUp />,
+        element: (
+          <AuthRoute>
+            <SignUp />
+          </AuthRoute>
+        ),
       },
       {
         path: "/all-books",
@@ -35,7 +45,11 @@ const routes = createBrowserRouter([
       },
       {
         path: "/add-new-book",
-        element: <AddBook />,
+        element: (
+          <PrivateRoute>
+            <AddBook />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/book-details/:id",

@@ -5,6 +5,13 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1" }),
   endpoints: (builder) => ({
     // user api
+    checkSignIn : builder.mutation({
+      query: (token) => ({
+        url: "/user/check-sign-in",
+        method: "POST",
+        body: { token: token },
+      })
+    }),
     signIn: builder.mutation({
       query: (user) => ({
         url: "/user/sign-in",
@@ -38,4 +45,5 @@ export const {
   useAddBookMutation,
   useSignUpMutation,
   useSignInMutation,
+  useCheckSignInMutation
 } = api;
