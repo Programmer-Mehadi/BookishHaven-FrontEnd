@@ -34,7 +34,7 @@ export const api = createApi({
       query: (book) => ({
         url: "/book/add-book",
         method: "POST",
-        body: { userData: book.userData },
+        body: { bookData: book },
       }),
     }),
   }),
