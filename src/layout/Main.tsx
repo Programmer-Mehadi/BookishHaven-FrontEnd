@@ -4,7 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/shared/Footer";
 import Header from "../components/shared/Header";
-import Loader from "../components/shared/Loader";
 import { useCheckSignInMutation } from "../redux/api/apiSlice";
 import { setTokenAndUser } from "../redux/features/auth/authSlice";
 import { useAppDispatch } from "../redux/hook";
@@ -19,7 +18,6 @@ const Main = () => {
       checkSignIn({
         token: localToken,
       }).then((response) => {
-        console.log(response);
         if ("data" in response) {
           if (response.data.data) {
             // toast.success(response.data.message);
@@ -40,21 +38,19 @@ const Main = () => {
         }
         setLoading(!loading);
       });
-    }
-    else {
+    } else {
       setLoading(!loading);
     }
   }, []);
 
   return (
     <div className="max-w-[1680px] mx-auto">
-      
-          <Header />
-          <Outlet />
-          <ToastContainer />
-          <Footer />
-     
-    
+      <Header />
+      <div className="px-5">
+        <Outlet />
+      </div>
+      <ToastContainer />
+      <Footer />
     </div>
   );
 };

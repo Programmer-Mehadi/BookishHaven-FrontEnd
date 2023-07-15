@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useAppSelector } from "../redux/hook";
 interface PrivateRouteProps {
@@ -6,6 +7,10 @@ interface PrivateRouteProps {
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { token, user } = useAppSelector((state) => state.auth);
   const location = useLocation();
+  useEffect(() => {
+  
+  }, []);
+
   if (token && user) {
     return <>{children}</>;
   } else {

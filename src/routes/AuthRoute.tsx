@@ -6,8 +6,9 @@ interface AuthRouteProps {
 const AuthRoute = ({ children }: AuthRouteProps) => {
   const { token, user } = useAppSelector((state) => state.auth);
   const location = useLocation();
+  const from = location?.state?.from?.pathname || "/";
   if (token && user) {
-    return <Navigate to="/" state={{ from: location }} />;
+    return <Navigate to={from} />;
   } else {
     return <>{children}</>;
   }
