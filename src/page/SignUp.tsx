@@ -1,10 +1,58 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { toast } from "react-toastify";
+import { useSignUpMutation } from "../redux/api/apiSlice";
 const SignUp = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signUpMutation] = useSignUpMutation();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name === "" || email === "" || password === "") {
+      toast.error(
+        `Please fill all the fields: ${name.length === 0 ? "name" : ""} ${
+          email.length === 0 ? ", email" : ""
+        } ${password.length === 0 ? ", password" : ""}`
+      );
+      return;
+    }
+    if (password.length < 6) {
+      toast.error("Password length minimum 6.");
+      return;
+    }
+    if (name.length > 0 && email.length > 0 && password.length > 5) {
+      signUpMutation({
+        userData: {
+          name,
+          email,
+          password,
+          token: {
+            tokenText: "",
+            validateTime: new Date(),
+          },
+        },
+      }).then((response) => {
+        if ("data" in response) {
+          toast.success(response.data.message);
+          const token = response.data.data.token.tokenText;
+          if (token) {
+            localStorage.setItem("bookishHaven-token", token);
+          }
+        } else if ("error" in response) {
+          if ("error" in response.error) {
+            if (response.error.error.match("TypeError: Failed to fetch")) {
+              toast.warn("Type Error : Email already have an account!");
+            }
+          }
+        }
+      });
+    }
+  };
   return (
     <div className="my-10 flex justify-center">
       <div className="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <form className="space-y-6" action="#">
+        <form className="space-y-6" onSubmit={(e) => handleSubmit(e)}>
           <h5 className="text-xl font-medium text-gray-900 dark:text-white">
             Sign up to our platform
           </h5>
@@ -18,7 +66,8 @@ const SignUp = () => {
               id="name"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               placeholder="name"
-              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div>
@@ -31,7 +80,8 @@ const SignUp = () => {
               id="email"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               placeholder="email"
-              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -44,7 +94,8 @@ const SignUp = () => {
               id="password"
               placeholder="password"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex items-start">

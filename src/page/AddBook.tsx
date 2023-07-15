@@ -1,6 +1,11 @@
 import { useState } from "react";
+import { useAddBookMutation } from "../redux/api/apiSlice";
 
 const AddBook = () => {
+  const imageHostKey = JSON.stringify(
+    import.meta.env.VITE_REACT_APP_imgbb_key
+  ) as string;
+
   const bookGenres = [
     "Action and Adventure",
     "Art",
@@ -53,6 +58,8 @@ const AddBook = () => {
     publicationDate: true,
     image: true,
   });
+  const [addBookMutation, { data, isLoading, error: apiErr }] =
+    useAddBookMutation();
   const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length === 0) {
       setError({ ...error, title: false });
@@ -75,7 +82,6 @@ const AddBook = () => {
     setPublicationDate(e.target.value);
   };
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
     if (e.target.files !== null && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -117,13 +123,42 @@ const AddBook = () => {
     ) {
       const formData = new FormData(e.target as HTMLFormElement);
       const imageFile = formData.get("image") as File;
-      const submitData = {
+      const submitData: {
+        title: string;
+        genre: string;
+        publicationDate: string;
+        imageFileUrl: string;
+        author: string;
+      } = {
         title,
         genre,
         publicationDate,
-        imageFile,
+        imageFileUrl: "",
+        author: "admin",
       };
-      console.log(submitData);
+      const formDataImage = new FormData();
+      formDataImage.append("image", imageFile);
+
+      let imgUrl = "";
+      const url = `https://api.imgbb.com/1/upload?key=${
+        imageHostKey.split('"')[1]
+      }`;
+      console.log(url);
+      fetch(url, {
+        method: "POST",
+        body: formDataImage,
+      })
+        .then((res) => res.json())
+        .then((imgbb) => {
+          console.log(imgbb);
+          if (imgbb.success) {
+            imgUrl = imgbb.data.display_url;
+            submitData["imageFileUrl"] = imgUrl;
+            addBookMutation(submitData as any);
+            console.log(data);
+            console.log(apiErr);
+          }
+        });
     }
   };
   return (
