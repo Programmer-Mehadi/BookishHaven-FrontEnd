@@ -1,52 +1,42 @@
+import { useEffect } from "react";
 import SimpleBookCard from "../components/Home/SimpleBookCard";
+import Loader from "../components/shared/Loader";
 import { useGetLastTenBooksQuery } from "../redux/api/apiSlice";
-import { HomeProduct } from "../types/product";
-
+import { setLastTen } from "../redux/features/book/bookSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
+import { RootState } from "../redux/store";
+import { HomeBook } from "../types/book";
 const Home = () => {
-  const products = [
-    {
-      id: 1,
-      title: "Product 1",
-      img: "https://flowbite.com/docs/images/blog/image-1.jpg",
-      author: "Author 1",
-    },
-    {
-      id: 2,
-      title: "Product 2",
-      img: "https://flowbite.com/docs/images/blog/image-1.jpg",
-      author: "Author 2",
-    },
-    {
-      id: 3,
-      title: "Product 3",
-      img: "https://flowbite.com/docs/images/blog/image-1.jpg",
-      author: "Author 3",
-    },
-    {
-      id: 4,
-      title: "Product 4",
-      img: "https://flowbite.com/docs/images/blog/image-1.jpg",
-      author: "Author 4",
-    },
-    {
-      id: 4,
-      title: "Product 4",
-      img: "https://flowbite.com/docs/images/blog/image-1.jpg",
-      author: "Author 5",
-    },
-  ];
+  const { lastTenList } = useAppSelector((state: RootState) => state.book);
+  const dispatch = useAppDispatch();
+  let { data, isLoading,refetch } = useGetLastTenBooksQuery(undefined);
 
-  const { data, isLoading } = useGetLastTenBooksQuery(undefined);
+  useEffect(() => {
+    console.log(data);
+    refetch();
+    if (data?.data) {
+      dispatch(
+        setLastTen({
+          books: data.data,
+        })
+      );
+      data = undefined;
+    }
+  }, [data]);
 
   return (
     <section className="my-10 px-6 md:px-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {products
-          ? products.map((product: HomeProduct) => {
-              return <SimpleBookCard product={product} />;
-            })
-          : "Loading..."}
-      </div>
+      {isLoading ? (
+        <Loader></Loader>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {lastTenList
+            ? lastTenList.map((product: HomeBook) => {
+                return <SimpleBookCard key={product._id} product={product} />;
+              })
+            : "Loading..."}
+        </div>
+      )}
     </section>
   );
 };

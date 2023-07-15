@@ -14,11 +14,11 @@ const BookSlice = createSlice({
   name: "book",
   initialState: initialState,
   reducers: {
-    getLastTen: (state, action) => {
-      state.lastTenList = action.payload;
+    setLastTen: (state, action) => {
+      state.lastTenList = action.payload.books;
     },
   },
 });
-export const {getLastTen} = BookSlice.actions;
+export const {setLastTen} = BookSlice.actions;
 
 export default BookSlice.reducer;
