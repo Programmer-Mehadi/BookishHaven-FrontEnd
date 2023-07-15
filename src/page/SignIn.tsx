@@ -1,10 +1,45 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { toast } from "react-toastify";
+import { useSignInMutation } from "../redux/api/apiSlice";
 const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signInMutation] = useSignInMutation();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email === "" || password === "") {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    signInMutation({
+      userData: {
+        email,
+        password,
+      },
+    }).then((response) => {
+      console.log(response);
+      if ("data" in response) {
+        if (response.data.data) {
+          toast.success(response.data.message);
+          const token = response.data.data.token.tokenText;
+          if (token) {
+            localStorage.setItem("bookishHaven-token", token);
+          }
+        } else {
+          toast.error(response.data.message);
+        }
+      } else if ("error" in response) {
+        if ("error" in response.error) {
+          toast.warn("Something went wrong");
+        }
+      }
+    });
+  };
   return (
     <div className="my-10 flex justify-center">
       <div className="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <form className="space-y-6" action="#">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <h5 className="text-xl font-medium text-gray-900 dark:text-white">
             Sign in to our platform
           </h5>
@@ -18,7 +53,8 @@ const SignIn = () => {
               id="email"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               placeholder="email"
-              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -31,7 +67,8 @@ const SignIn = () => {
               id="password"
               placeholder="password"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex items-start">

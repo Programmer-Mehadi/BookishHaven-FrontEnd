@@ -7,10 +7,11 @@ import store from "./redux/store.ts";
 import routes from "./routes/index.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={routes}></RouterProvider>
-    </Provider>
-
-  </React.StrictMode>
+  <div>
+    <React.StrictMode>
+      <Provider store={store}>
+        <RouterProvider router={routes}></RouterProvider>
+      </Provider>
+    </React.StrictMode>
+  </div>
 );
