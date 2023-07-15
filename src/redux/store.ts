@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/auth/authSlice";
+import bookReducer from "./features/book/bookSlice";
 import wishlistReducer from "./features/wishlist/wishlistSlice";
 // import logger from "./middlewares/logger";
 import { api } from "./api/apiSlice";
 
 const store = configureStore({
   reducer: {
-    counter: wishlistReducer,
+    book: bookReducer,
+    wishList: wishlistReducer,
     auth: authReducer,
     [api.reducerPath]: api.reducer,
   },
