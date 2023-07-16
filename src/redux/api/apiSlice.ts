@@ -54,6 +54,13 @@ export const api = createApi({
         body: { bookData: book as object },
       }),
     }),
+    createReview: builder.mutation({
+      query: (review) => ({
+        url: `/review/create-review`,
+        method: "POST",
+        body: { review: review as object },
+      }),
+    }),
   }),
 });
 
@@ -66,4 +73,5 @@ export const {
   useGetAllBooksQuery,
   useEditBookMutation,
   useGetSingleBookQuery,
+  useCreateReviewMutation,
 } = api;

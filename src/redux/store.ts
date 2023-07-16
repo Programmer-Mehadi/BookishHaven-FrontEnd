@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/auth/authSlice";
 import bookReducer from "./features/book/bookSlice";
 import wishlistReducer from "./features/wishlist/wishlistSlice";
+import reviewsReducer from './features/reviews/reviewsSlice';
 // import logger from "./middlewares/logger";
 import { api } from "./api/apiSlice";
 
@@ -10,6 +11,7 @@ const store = configureStore({
     book: bookReducer,
     wishList: wishlistReducer,
     auth: authReducer,
+    reviews: reviewsReducer,
     [api.reducerPath]: api.reducer,
   },
   devTools: true,
