@@ -1,16 +1,31 @@
-import { useState } from "react";
-import { useAppSelector } from "../redux/hook";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { RootState } from "../redux/store";
-import { useCreateReviewMutation } from "../redux/api/apiSlice";
+import {
+  useCreateReviewMutation,
+  useGetAllReviewsByIdQuery,
+} from "../redux/api/apiSlice";
 import { toast } from "react-toastify";
+import { setReviewsList } from "../redux/features/reviews/reviewsSlice";
 
 const ReviewComponent = ({ id }) => {
   const [reviews, setReviews] = useState("");
   const { reviewsList } = useAppSelector((state: RootState) => state.reviews);
   const { token, user } = useAppSelector((state: RootState) => state.auth);
   const [createReviewMutation] = useCreateReviewMutation();
-  console.log(id);
-  console.log(reviewsList);
+  let { data: reviewData, refetch } = useGetAllReviewsByIdQuery(id);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    void refetch();
+    if (reviewData?.data) {
+      dispatch(
+        setReviewsList({
+          reviewsList: reviewData.data,
+        })
+      );
+      reviewData = undefined;
+    }
+  }, [reviewData]);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (reviews !== "") {
@@ -23,6 +38,7 @@ const ReviewComponent = ({ id }) => {
           if (res.data.data) {
             toast.success(res.data.message);
             setReviews("");
+            void refetch();
           } else {
             toast.error(res.data.message);
           }
@@ -30,6 +46,7 @@ const ReviewComponent = ({ id }) => {
           toast.error("Something went wrong");
         }
       });
+    
     } else {
       toast.error("Please fill all the fields");
     }
@@ -71,6 +88,28 @@ const ReviewComponent = ({ id }) => {
       </div>
 
       {/* review list */}
+      <div className="my-10">
+        <div>
+          <h1 className="text-2xl font-bold ">Previous Reviews</h1>
+        </div>
+        <div>
+          <div className="grid gap-3 mt-8">
+            {reviewsList &&
+              reviewsList.map((review) => (
+                <div key={review._id}>
+                  <h1 className="font-bold">
+                    Name:{" "}
+                    <span className="font-normal">{review?.userId?.name}</span>
+                  </h1>
+                  <h4>
+                    <span className="font-bold">Review: </span>
+                    {review.text}
+                  </h4>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

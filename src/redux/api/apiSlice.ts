@@ -61,6 +61,11 @@ export const api = createApi({
         body: { review: review as object },
       }),
     }),
+    getAllReviewsById: builder.query({
+      query: (bookId) => ({
+        url: `/review/all-reviews/${bookId as string}`,
+      }),
+    }),
   }),
 });
 
@@ -74,4 +79,5 @@ export const {
   useEditBookMutation,
   useGetSingleBookQuery,
   useCreateReviewMutation,
+  useGetAllReviewsByIdQuery
 } = api;

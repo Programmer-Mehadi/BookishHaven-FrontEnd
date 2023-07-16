@@ -11,8 +11,12 @@ const initialState: reviewsSlice = {
 const reviewsSlice = createSlice({
   name: "reviews",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setReviewsList: (state, action) => {
+      state.reviewsList = action.payload.reviewsList;
+    },
+  },
 });
-export const {} = reviewsSlice.actions;
+export const {setReviewsList} = reviewsSlice.actions;
 
 export default reviewsSlice.reducer;

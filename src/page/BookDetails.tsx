@@ -18,19 +18,15 @@ const BookDetails = () => {
       ) : (
         <div className="my-10 px-5 flex items-center flex-col ">
           <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="#">
-              <img
-                className="p-8 rounded-t-lg h-96 xl:h-[600px] mx-auto "
-                src={data?.data?.image}
-                alt="product image"
-              />
-            </a>
+            <img
+              className="p-8 rounded-t-lg h-96 xl:h-[600px] mx-auto "
+              src={data?.data?.image}
+              alt="product image"
+            />
             <div className="px-5 pb-5">
-              <a href="#">
-                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                  Title: {data?.data?.title}
-                </h5>
-              </a>
+              <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                Title: {data?.data?.title}
+              </h5>
               <p className="text-semibold text-xl my-2">
                 Author: {data?.data?.author}
               </p>
