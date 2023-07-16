@@ -9,10 +9,9 @@ import { HomeBook } from "../types/book";
 const Home = () => {
   const { lastTenList } = useAppSelector((state: RootState) => state.book);
   const dispatch = useAppDispatch();
-  let { data, isLoading,refetch } = useGetLastTenBooksQuery(undefined);
+  let { data, isLoading, refetch } = useGetLastTenBooksQuery(undefined);
 
   useEffect(() => {
-    console.log(data);
     refetch();
     if (data?.data) {
       dispatch(

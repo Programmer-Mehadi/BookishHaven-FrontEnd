@@ -6,9 +6,7 @@ import { toast } from "react-toastify";
 import { RootState } from "../redux/store";
 const AddBook = () => {
   const { user, token } = useAppSelector((state: RootState) => state.auth);
-  const imageHostKey = JSON.stringify(
-    import.meta.env.VITE_REACT_APP_imgbb_key
-  ) as string;
+  const imageHostKey = JSON.stringify(import.meta.env.VITE_REACT_APP_imgbb_key);
 
   const bookGenres = [
     "Action and Adventure",
@@ -139,8 +137,8 @@ const AddBook = () => {
         genre,
         publicationDate,
         image: "",
-        author: "admin",
-        authorId: (user as any)?._id,
+        author: (user as { _id: string; name: string; email: string })?.name,
+        authorId: (user as { _id: string; name: string; email: string })?._id,
       };
       const formDataImage = new FormData();
       formDataImage.append("image", imageFile);

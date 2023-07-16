@@ -17,8 +17,11 @@ const BookSlice = createSlice({
     setLastTen: (state, action) => {
       state.lastTenList = action.payload.books;
     },
+    setAllBooks: (state, action) => {
+      state.allBookList = action.payload.books;
+    },
   },
 });
-export const {setLastTen} = BookSlice.actions;
+export const { setLastTen,setAllBooks } = BookSlice.actions;
 
 export default BookSlice.reducer;
