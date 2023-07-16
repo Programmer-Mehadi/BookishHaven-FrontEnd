@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   useCreateWishListMutation,
   useGetAllWishListMutation,
@@ -7,13 +9,12 @@ import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { RootState } from "../../redux/store";
 import { HomeBook } from "../../types/book";
 import ViewButton from "../button/ViewButton";
-import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
 interface SimpleBookCardProps {
   product: HomeBook;
 }
 const SimpleBookCard: React.FC<SimpleBookCardProps> = ({ product }) => {
   const { token, user } = useAppSelector((state: RootState) => state.auth);
+  const { wishList } = useAppSelector((state: RootState) => state.wishList);
   const [wishListValue, setWishListValue] = useState("");
   const [createWishListMutation] = useCreateWishListMutation();
   const dispatch = useAppDispatch();
@@ -23,12 +24,17 @@ const SimpleBookCard: React.FC<SimpleBookCardProps> = ({ product }) => {
     getAllWishListMutation({
       id: user._id,
     }).then((res) => {
-      console.log(res?.data?.data);
       dispatch(
         setWishList({
           wishList: res?.data?.data,
         })
       );
+      const find = res?.data?.data?.find((item) => item.bookId === product._id);
+      if (find) {
+        setWishListValue(find.text);
+      } else {
+        setWishListValue("");
+      }
     });
   }, []);
 
@@ -47,7 +53,6 @@ const SimpleBookCard: React.FC<SimpleBookCardProps> = ({ product }) => {
             getAllWishListMutation({
               id: user._id,
             }).then((res) => {
-              console.log(res?.data?.data);
               dispatch(
                 setWishList({
                   wishList: res?.data?.data,

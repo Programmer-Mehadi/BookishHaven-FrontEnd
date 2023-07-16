@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useCreateWishListMutation,
   useGetAllWishListMutation,
@@ -15,17 +15,25 @@ const BookCard = ({ book }) => {
   const { user, token } = useAppSelector((state) => state.auth);
   const [wishListValue, setWishListValue] = useState("");
   const [createWishListMutation] = useCreateWishListMutation();
+  const [getAllWishListMutation, { data, refetch }] =
+  useGetAllWishListMutation();
   const dispatch = useAppDispatch();
   useEffect(() => {
-    useGetAllWishListMutation({
+    getAllWishListMutation({
       id: user._id,
     }).then((res) => {
-      console.log(res?.data?.data);
+
       dispatch(
         setWishList({
           wishList: res?.data?.data,
         })
       );
+      const find = res?.data?.data?.find((item) => item.bookId === book._id);
+      if (find) {
+        setWishListValue(find.text);
+      } else {
+        setWishListValue("");
+      }
     });
   }, []);
   const submitWishList = (e: React.FormEvent) => {
@@ -43,7 +51,7 @@ const BookCard = ({ book }) => {
             getAllWishListMutation({
               id: user._id,
             }).then((res) => {
-              console.log(res?.data?.data);
+            
               dispatch(
                 setWishList({
                   wishList: res?.data?.data,

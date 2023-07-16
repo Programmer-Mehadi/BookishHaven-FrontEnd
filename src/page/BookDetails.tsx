@@ -1,14 +1,16 @@
-import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import ReviewComponent from "../components/ReviewComponent";
+import Loader from "../components/shared/Loader";
 import {
   useCreateWishListMutation,
+  useGetAllWishListMutation,
   useGetSingleBookQuery,
 } from "../redux/api/apiSlice";
-import Loader from "../components/shared/Loader";
-import ReviewComponent from "../components/ReviewComponent";
+import { setWishList } from "../redux/features/wishlist/wishlistSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { RootState } from "../redux/store";
-import { useAppSelector } from "../redux/hook";
-import { toast } from "react-toastify";
 
 const BookDetails = () => {
   const id = useLocation().pathname.split("/")[2];
@@ -19,19 +21,51 @@ const BookDetails = () => {
   const { user, token } = useAppSelector((state: RootState) => state.auth);
   const [wishListValue, setWishListValue] = useState("");
   const [createWishListMutation] = useCreateWishListMutation();
+  const [getAllWishListMutation] = useGetAllWishListMutation();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    getAllWishListMutation({
+      id: user._id,
+    }).then((res) => {
+      dispatch(
+        setWishList({
+          wishList: res?.data?.data,
+        })
+      );
+      const find = res?.data?.data?.find(
+        (item) => item.bookId === data?.data._id
+      );
+     
+      if (find) {
+        setWishListValue(find.text);
+      } else {
+        setWishListValue("");
+      }
+    });
+  }, [data]);
+
   const submitWishList = (e: React.FormEvent) => {
     e.preventDefault();
     setWishListValue(e.target.value);
     if (token && user) {
       createWishListMutation({
-        bookId: data?.data?.bookId,
+        bookId: data?.data?._id,
         userId: user._id,
         text: e.target.value,
       }).then((res) => {
-      
         if ("data" in res) {
           if (res?.data?.data) {
             toast.success(res?.data?.message);
+            getAllWishListMutation({
+              id: user._id,
+            }).then((res) => {
+             
+              dispatch(
+                setWishList({
+                  wishList: res?.data?.data,
+                })
+              );
+            });
           }
         } else {
           toast.error(res?.data?.message);
