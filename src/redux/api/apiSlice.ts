@@ -47,6 +47,15 @@ export const api = createApi({
         url: `/book/single-book/${bookId as string}`,
       }),
     }),
+    deleteSingleBook: builder.mutation({
+      query: (data) => ({
+        url: `/book/delete-book/${data?.id as string}`,
+        method: "DELETE",
+        body: {
+          data: data.data as object,
+        },
+      }),
+    }),
     editBook: builder.mutation({
       query: (book) => ({
         url: `/book/edit-book`,
@@ -96,4 +105,5 @@ export const {
   useGetAllReviewsByIdQuery,
   useCreateWishListMutation,
   useGetAllWishListMutation,
+  useDeleteSingleBookMutation,
 } = api;

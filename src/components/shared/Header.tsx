@@ -35,7 +35,7 @@ const Header = () => {
 
   return (
     <div>
-      <nav className="bg-white">
+      <nav className="bg-white border-b">
         <div className="flex flex-wrap items-center justify-between mx-auto px-2 pr-4 py-2">
           <Link to="/" className="flex items-center">
             <img src={logo} className="h-16 ml-0 mr-3" alt="Flowbite Logo" />
