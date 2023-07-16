@@ -42,6 +42,18 @@ export const api = createApi({
         body: { bookData: book as object },
       }),
     }),
+    getSingleBook: builder.query({
+      query: (bookId) => ({
+        url: `/book/single-book/${bookId as string}`,
+      }),
+    }),
+    editBook: builder.mutation({
+      query: (book) => ({
+        url: `/book/edit-book`,
+        method: "POST",
+        body: { bookData: book as object },
+      }),
+    }),
   }),
 });
 
@@ -52,4 +64,6 @@ export const {
   useSignInMutation,
   useCheckSignInMutation,
   useGetAllBooksQuery,
+  useEditBookMutation,
+  useGetSingleBookQuery,
 } = api;

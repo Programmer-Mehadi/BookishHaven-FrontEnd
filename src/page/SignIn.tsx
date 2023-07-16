@@ -37,7 +37,6 @@ const SignIn = () => {
             checkSignIn({
               token: token,
             }).then((response) => {
-              console.log(response);
               if ("data" in response) {
                 if (response.data.data) {
                   // toast.success(response.data.message);

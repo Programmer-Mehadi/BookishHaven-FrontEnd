@@ -1,6 +1,12 @@
+import { Link } from "react-router-dom";
+import { useAppSelector } from "../redux/hook";
+
 const BookCard = ({ book }) => {
   const date = new Date(book.publicationDate);
   const formattedDate = date.toLocaleDateString();
+
+  const { user, token } = useAppSelector((state) => state.auth);
+
   return (
     <div>
       <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-full flex flex-col gap-5">
@@ -21,13 +27,21 @@ const BookCard = ({ book }) => {
             Publication Date: {formattedDate}
           </p>
           <div className="flex-1">
-            <div className="flex items-end justify-between h-full">
-              <a
-                href="#"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
+            <div className="flex items-end justify-between gap-5 h-full">
+              {token && user && user._id === book.authorId && (
+                <Link
+                  to={`/edit-book/${book._id}`}
+                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
+                >
+                  Edit Book
+                </Link>
+              )}
+              <Link
+                to={`/book-details/${book._id}`}
+                className="text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800 w-full"
               >
                 View Details
-              </a>
+              </Link>
             </div>
           </div>
         </div>
