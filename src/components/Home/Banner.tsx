@@ -1,9 +1,17 @@
+import { useEffect,useState } from "react";
 import one from "../../../public/banner/1.jpg";
 import two from "../../../public/banner/2.jpg";
 import three from "../../../public/banner/3.jpg";
 import four from "../../../public/banner/4.jpg";
 import five from "../../../public/banner/5.jpg";
 const Banner = () => {
+  const [reload,setReload]= useState(false)
+  useEffect(() => {
+    setReload(!reload);
+  },[reload])
+  useEffect(() => {
+    setReload(!reload);
+  },[])
   return (
     <div>
       <div

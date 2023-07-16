@@ -1,3 +1,4 @@
+// @ts-ignore
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -22,9 +23,19 @@ const BookDetails = () => {
     void refetch();
   }, [id, data]);
   useEffect(() => {
-    const find = wishList?.find((item) => item.bookId === data?.data?._id);
+    let find:
+      | {
+          text: string;
+          bookId: string;
+        }
+      | undefined = wishList?.find(
+      (item: { bookId: string; text: string }) =>
+        item.bookId === data?.data?._id
+    );
     if (find) {
-      setWishListValue(find.text);
+      if ("text" in find) {
+        setWishListValue(find.text);
+      }
     } else {
       setWishListValue("");
     }
@@ -36,43 +47,53 @@ const BookDetails = () => {
   const [deleteSingleBookMutation] = useDeleteSingleBookMutation();
   const dispatch = useAppDispatch();
   useEffect(() => {
-    getAllWishListMutation({
-      id: user?._id,
-    }).then((res) => {
-      dispatch(
-        setWishList({
-          wishList: res?.data?.data,
-        })
-      );
-    });
+    if ("_id" in user) {
+      getAllWishListMutation({
+        id: user?._id,
+      }).then((res) => {
+        if ("data" in res) {
+          dispatch(
+            setWishList({
+              wishList: res?.data?.data,
+            })
+          );
+        }
+      });
+    }
   }, [user]);
 
   const submitWishList = (e: React.FormEvent) => {
     e.preventDefault();
-    setWishListValue(e.target.value);
+    const target = e.target as HTMLFormElement;
+    const value = target.value;
+    setWishListValue(value);
     if (token && user) {
-      createWishListMutation({
-        bookId: data?.data?._id,
-        userId: user._id,
-        text: e.target.value,
-      }).then((res) => {
-        if ("data" in res) {
-          if (res?.data?.data) {
-            toast.success(res?.data?.message);
-            getAllWishListMutation({
-              id: user._id,
-            }).then((res) => {
-              dispatch(
-                setWishList({
-                  wishList: res?.data?.data,
-                })
-              );
-            });
+      if ("_id" in user) {
+        createWishListMutation({
+          bookId: data?.data?._id,
+          userId: user._id,
+          text: value,
+        }).then((res) => {
+          if ("data" in res) {
+            if (res?.data?.data) {
+              toast.success(res?.data?.message);
+              getAllWishListMutation({
+                id: user._id,
+              }).then((res) => {
+                if ("data" in res) {
+                  dispatch(
+                    setWishList({
+                      wishList: res?.data?.data,
+                    })
+                  );
+                }
+              });
+            }
+          } else {
+            toast.error("Something went wrong");
           }
-        } else {
-          toast.error(res?.data?.message);
-        }
-      });
+        });
+      }
     }
   };
 
@@ -103,7 +124,7 @@ const BookDetails = () => {
                   <p className="text-semibold text-xl my-2">
                     Publication Date: {data?.data?.publicationDate}
                   </p>
-                  {token && user?._id && (
+                  {token && user && (
                     <select
                       name=""
                       id=""
@@ -121,41 +142,46 @@ const BookDetails = () => {
                       <option value="finishedList">Finished List</option>
                     </select>
                   )}
-                  {token && user && user._id === data?.data?.authorId && (
-                    <div className="grid grid-cols-2 gap-4 items-center mt-7 ">
-                      <Link
-                        to={`/edit-book/${data?.data._id}`}
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
-                      >
-                        Edit Book
-                      </Link>
-                      <p
-                        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-blue-800 cursor-pointer"
-                        onClick={() => {
-                          deleteSingleBookMutation({
-                            data: {
-                              token,
-                              uid: user?._id,
-                            },
-                            id,
-                          }).then((res) => {
-                            if ("data" in res) {
-                              if (res?.data?.data) {
-                                toast.success(res?.data?.message);
-                                return navigate("/all-books");
-                              } else {
-                                toast.error(res?.data?.message);
-                              }
-                            } else {
-                              toast.error("Something went wrong");
+                  {token &&
+                    user &&
+                    "_id" in user &&
+                    user._id === data?.data?.authorId && (
+                      <div className="grid grid-cols-2 gap-4 items-center mt-7 ">
+                        <Link
+                          to={`/edit-book/${data?.data._id}`}
+                          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
+                        >
+                          Edit Book
+                        </Link>
+                        <p
+                          className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-blue-800 cursor-pointer"
+                          onClick={() => {
+                            if ("_id" in user) {
+                              deleteSingleBookMutation({
+                                data: {
+                                  token,
+                                  uid: user?._id,
+                                },
+                                id,
+                              }).then((res) => {
+                                if ("data" in res) {
+                                  if (res?.data?.data) {
+                                    toast.success(res?.data?.message);
+                                    return navigate("/all-books");
+                                  } else {
+                                    toast.error(res?.data?.message);
+                                  }
+                                } else {
+                                  toast.error("Something went wrong");
+                                }
+                              });
                             }
-                          });
-                        }}
-                      >
-                        Delete Book
-                      </p>
-                    </div>
-                  )}
+                          }}
+                        >
+                          Delete Book
+                        </p>
+                      </div>
+                    )}
                 </div>
               </div>
               <ReviewComponent id={id}></ReviewComponent>

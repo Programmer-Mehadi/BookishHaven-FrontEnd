@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/v1" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://bookish-haven-back-end.vercel.app/api/v1" }),
   endpoints: (builder) => ({
     // user api
     checkSignIn: builder.mutation({
@@ -31,8 +31,8 @@ export const api = createApi({
       query: () => "/book/last-ten-books",
     }),
     getAllBooks: builder.query({
-      query: (params: { genre: string; year: string }) => ({
-        url: `/book/all-books?genre=${params.genre}&year=${params.year}`,
+      query: (params: { genre: string; year: string; name: string }) => ({
+        url: `/book/all-books?genre=${params.genre}&year=${params.year}&name=${params.name}`,
       }),
     }),
     addBook: builder.mutation({

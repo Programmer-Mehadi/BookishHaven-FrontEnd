@@ -1,3 +1,4 @@
+// @ts-ignore
 import { useEffect, useState } from "react";
 import {
   useAddBookMutation,
@@ -79,9 +80,11 @@ const EditBook = () => {
       setPublicationDate(getBook.data.publicationDate);
       setTitle(getBook.data.title);
       setPreImage(getBook.data.image);
+     if("_id" in user){
       if (getBook?.data?.authorId !== user._id) {
         return navigate("/");
       }
+     }
       getBook = undefined;
     }
   }, [getBook]);
@@ -209,12 +212,13 @@ const EditBook = () => {
           })
           .then((error) => {
             setLoading(false);
+            console.log(error);
           });
       } else {
         submitData["image"] = preImage;
         submitData["_id"] = editId;
         submitData["token"] = token;
-        editBookMutation(submitData as any, editId as string).then(
+        editBookMutation(submitData as any).then(
           (response) => {
             if ("data" in response) {
               if (response.data.data) {

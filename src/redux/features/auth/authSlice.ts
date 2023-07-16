@@ -17,12 +17,12 @@ const authSlice = createSlice({
     setTokenAndUser: (
       state,
       action: PayloadAction<{
-        token: string ;
+        token: string;
         user: object;
       }>
     ) => {
       state.token = action.payload.token;
-      state.user = {...action.payload.user};
+      state.user = { ...action.payload.user };
     },
   },
 });

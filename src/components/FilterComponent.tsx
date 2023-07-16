@@ -1,8 +1,7 @@
-import React from "react";
-import { useState } from "react";
-import { useAppDispatch } from "../redux/hook";
+import React, { useState } from "react";
 import { useGetAllBooksQuery } from "../redux/api/apiSlice";
 import { setAllBooks } from "../redux/features/book/bookSlice";
+import { useAppDispatch } from "../redux/hook";
 
 const FilterComponent = () => {
   const bookGenres = [
@@ -60,10 +59,12 @@ const FilterComponent = () => {
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState("");
+  const [name, setName] = useState("");
   const dispatch = useAppDispatch();
   let { data, refetch } = useGetAllBooksQuery({
     genre,
     year,
+    name : name ? name: "",
   });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,9 +82,24 @@ const FilterComponent = () => {
     <div className="">
       <div className="w-full h-fit max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
         <form className="space-y-6" onSubmit={handleSubmit}>
-          <h5 className="text-xl font-medium text-gray-900 dark:text-white">
+          <h5 className="text-xl font-semibold text-gray-900 dark:text-white bg-green-100 p-2 rounded-[8px] text-center">
             Filter here
           </h5>
+          <div className="relative">
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Type Here
+            </label>
+            <input
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+              type="text"
+              id="name"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Search for author/title/genre"
+            />
+          </div>
           <div className="relative">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Genre

@@ -24,7 +24,7 @@ const Home = () => {
   }, [data]);
 
   return (
-    <section className="my-10 px-6 md:px-10">
+    <section className="my-10 px-6 md:px-10 flex justify-center">
       {isLoading ? (
         <Loader></Loader>
       ) : (

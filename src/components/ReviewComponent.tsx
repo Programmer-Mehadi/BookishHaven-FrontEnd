@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hook";
-import { RootState } from "../redux/store";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   useCreateReviewMutation,
   useGetAllReviewsByIdQuery,
 } from "../redux/api/apiSlice";
-import { toast } from "react-toastify";
 import { setReviewsList } from "../redux/features/reviews/reviewsSlice";
-import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
+import { RootState } from "../redux/store";
 
-const ReviewComponent = ({ id }) => {
+const ReviewComponent = ({ id }: { id: string }) => {
   const [reviews, setReviews] = useState("");
   const { reviewsList } = useAppSelector((state: RootState) => state.reviews);
   const { token, user } = useAppSelector((state: RootState) => state.auth);
@@ -30,23 +30,25 @@ const ReviewComponent = ({ id }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (reviews !== "") {
-      createReviewMutation({
-        userId: user?._id,
-        bookId: id,
-        text: reviews,
-      }).then((res) => {
-        if ("data" in res) {
-          if (res.data.data) {
-            toast.success(res.data.message);
-            setReviews("");
-            void refetch();
+      if ("_id" in user) {
+        createReviewMutation({
+          userId: user?._id,
+          bookId: id,
+          text: reviews,
+        }).then((res) => {
+          if ("data" in res) {
+            if (res.data.data) {
+              toast.success(res.data.message);
+              setReviews("");
+              void refetch();
+            } else {
+              toast.error(res.data.message);
+            }
           } else {
-            toast.error(res.data.message);
+            toast.error("Something went wrong");
           }
-        } else {
-          toast.error("Something went wrong");
-        }
-      });
+        });
+      }
     } else {
       toast.error("Please fill all the fields");
     }
@@ -97,18 +99,28 @@ const ReviewComponent = ({ id }) => {
         <div>
           <div className="grid gap-3 mt-8">
             {reviewsList &&
-              reviewsList.map((review) => (
-                <div key={review._id}>
-                  <h1 className="font-bold">
-                    Name:{" "}
-                    <span className="font-normal">{review?.userId?.name}</span>
-                  </h1>
-                  <h4>
-                    <span className="font-bold">Review: </span>
-                    {review.text}
-                  </h4>
-                </div>
-              ))}
+              reviewsList.map(
+                (review: {
+                  _id: string;
+                  text: string;
+                  userId: {
+                    name: string;
+                  } | null;
+                }) => (
+                  <div key={review._id}>
+                    <h1 className="font-bold">
+                      Name:{" "}
+                      <span className="font-normal">
+                        {review?.userId?.name}
+                      </span>
+                    </h1>
+                    <h4>
+                      <span className="font-bold">Review: </span>
+                      {review.text}
+                    </h4>
+                  </div>
+                )
+              )}
             {reviewsList && reviewsList.length === 0 && (
               <h1 className="font-bold ">No Reviews</h1>
             )}

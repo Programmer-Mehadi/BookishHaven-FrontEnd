@@ -13,57 +13,80 @@ interface SimpleBookCardProps {
   product: HomeBook;
 }
 const SimpleBookCard: React.FC<SimpleBookCardProps> = ({ product }) => {
-  const { token, user } = useAppSelector((state: RootState) => state.auth);
+  const {
+    token,
+    user,
+  }: {
+    token: string;
+    user:
+      | {
+          _id: string;
+          name: string;
+          email: string;
+        }
+      | {};
+  } = useAppSelector((state: RootState) => state.auth);
   const { wishList } = useAppSelector((state: RootState) => state.wishList);
   const [wishListValue, setWishListValue] = useState("");
   const [createWishListMutation] = useCreateWishListMutation();
   const dispatch = useAppDispatch();
-  const [getAllWishListMutation, { data, refetch }] =
-    useGetAllWishListMutation();
+  const [getAllWishListMutation] = useGetAllWishListMutation();
   useEffect(() => {
-    getAllWishListMutation({
-      id: user._id,
-    }).then((res) => {
-      dispatch(
-        setWishList({
-          wishList: res?.data?.data,
-        })
-      );
-      const find = res?.data?.data?.find((item) => item.bookId === product._id);
-      if (find) {
-        setWishListValue(find.text);
-      } else {
-        setWishListValue("");
-      }
-    });
+    if ("_id" in user) {
+      getAllWishListMutation({
+        id: user._id,
+      }).then((res) => {
+        if ("data" in res) {
+          dispatch(
+            setWishList({
+              wishList: res?.data?.data,
+            })
+          );
+          const find = res?.data?.data?.find(
+            (item: { bookId: string }) => item.bookId === product._id
+          );
+          if (find) {
+            setWishListValue(find.text);
+          } else {
+            setWishListValue("");
+          }
+        }
+      });
+    }
   }, []);
 
   const submitWishList = (e: React.FormEvent) => {
     e.preventDefault();
-    setWishListValue(e.target.value);
-    if (token && user) {
-      createWishListMutation({
-        bookId: product._id,
-        userId: user._id,
-        text: e.target.value,
-      }).then((res) => {
-        if ("data" in res) {
-          if (res?.data?.data) {
-            toast.success(res?.data?.message);
-            getAllWishListMutation({
-              id: user._id,
-            }).then((res) => {
-              dispatch(
-                setWishList({
-                  wishList: res?.data?.data,
-                })
-              );
-            });
+    const target = e.target as HTMLFormElement;
+    const value = target.value;
+    setWishListValue(value);
+    if ("_id" in user) {
+      if (token && user) {
+        createWishListMutation({
+          bookId: product._id,
+          userId: user._id,
+          text: value,
+        }).then((res) => {
+          if ("data" in res) {
+            if (res?.data?.data) {
+              toast.success(res?.data?.message);
+              getAllWishListMutation({
+                id: user._id,
+              }).then((res) => {
+                if ("data" in res) {
+                  dispatch(
+                    setWishList({
+                      wishList: res?.data?.data,
+                    })
+                  );
+                }
+              });
+            }
+          } else {
+            toast.error("Something went wrong");
           }
-        } else {
-          toast.error(res?.data?.message);
-        }
-      });
+        });
+      }
     }
   };
 
@@ -90,8 +113,7 @@ const SimpleBookCard: React.FC<SimpleBookCardProps> = ({ product }) => {
           </div>
 
           <div className="flex flex-col md:flex-row gap-5 md:justify-between">
-            <ViewButton id={product?._id} />
-            {token && user?._id && (
+            {token && user && (
               <select
                 name=""
                 id=""
@@ -109,6 +131,7 @@ const SimpleBookCard: React.FC<SimpleBookCardProps> = ({ product }) => {
                 <option value="finishedList">Finished List</option>
               </select>
             )}
+            <ViewButton id={product?._id} />
           </div>
         </div>
       </div>

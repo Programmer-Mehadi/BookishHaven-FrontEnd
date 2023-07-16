@@ -1,68 +1,103 @@
-import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   useCreateWishListMutation,
   useGetAllWishListMutation,
 } from "../redux/api/apiSlice";
-import { toast } from "react-toastify";
 import { setWishList } from "../redux/features/wishlist/wishlistSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
 
-const BookCard = ({ book }) => {
+const BookCard = ({
+  book,
+}: {
+  book: {
+    _id: string;
+    title: string;
+    author: string;
+    image: string;
+    publicationDate: string;
+    genre: string;
+    authorId: string;
+  };
+}) => {
   const date = new Date(book.publicationDate);
   const formattedDate = date.toLocaleDateString();
 
-  const { user, token } = useAppSelector((state) => state.auth);
+  const {
+    user,
+    token,
+  }: {
+    user:
+      | {
+          _id: string;
+          name: string;
+          email: string;
+        }
+      | {};
+    token: string;
+  } = useAppSelector((state) => state.auth);
   const [wishListValue, setWishListValue] = useState("");
   const [createWishListMutation] = useCreateWishListMutation();
-  const [getAllWishListMutation, { data, refetch }] =
-  useGetAllWishListMutation();
+  const [getAllWishListMutation] = useGetAllWishListMutation();
   const dispatch = useAppDispatch();
   useEffect(() => {
-    getAllWishListMutation({
-      id: user._id,
-    }).then((res) => {
-
-      dispatch(
-        setWishList({
-          wishList: res?.data?.data,
-        })
-      );
-      const find = res?.data?.data?.find((item) => item.bookId === book._id);
-      if (find) {
-        setWishListValue(find.text);
-      } else {
-        setWishListValue("");
-      }
-    });
+    if ("_id" in user) {
+      getAllWishListMutation({
+        id: user._id,
+      }).then((res) => {
+        if ("data" in res) {
+          dispatch(
+            setWishList({
+              wishList: res?.data?.data,
+            })
+          );
+          const find = res?.data?.data?.find(
+            (item: { bookId: string }) => item.bookId === book._id
+          );
+          if (find) {
+            setWishListValue(find.text);
+          } else {
+            setWishListValue("");
+          }
+        }
+      });
+    }
   }, []);
   const submitWishList = (e: React.FormEvent) => {
     e.preventDefault();
-    setWishListValue(e.target.value);
+    const target = e.target as HTMLFormElement;
+    const value = target.value;
+    setWishListValue(value);
     if (token && user) {
-      createWishListMutation({
-        bookId: book._id,
-        userId: user._id,
-        text: e.target.value,
-      }).then((res) => {
-        if ("data" in res) {
-          if (res?.data?.data) {
-            toast.success(res?.data?.message);
-            getAllWishListMutation({
-              id: user._id,
-            }).then((res) => {
-            
-              dispatch(
-                setWishList({
-                  wishList: res?.data?.data,
-                })
-              );
-            });
+      if ("_id" in user) {
+        createWishListMutation({
+          bookId: book._id,
+          userId: user._id,
+          text: value,
+        }).then((res) => {
+          if ("data" in res) {
+            if (res?.data?.data) {
+              toast.success(res?.data?.message);
+              getAllWishListMutation({
+                id: user._id,
+              }).then((res) => {
+                if ("data" in res) {
+                  dispatch(
+                    setWishList({
+                      wishList: res?.data?.data,
+                    })
+                  );
+                } else {
+                  toast.error("Something went wrong");
+                }
+              });
+            }
+          } else {
+            toast.error("Something went wrong");
           }
-        } else {
-          toast.error(res?.data?.message);
-        }
-      });
+        });
+      }
     }
   };
   return (
@@ -85,7 +120,7 @@ const BookCard = ({ book }) => {
             Publication Date: {formattedDate}
           </p>
           <div className="flex-1">
-            {token && user?._id && (
+            {token && user && (
               <select
                 name=""
                 id=""
@@ -105,7 +140,7 @@ const BookCard = ({ book }) => {
             )}
 
             <div className="flex items-end justify-between gap-5 h-full">
-              {token && user && user._id === book.authorId && (
+              {token && user && "_id" in user && user._id === book.authorId && (
                 <Link
                   to={`/edit-book/${book._id}`}
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
