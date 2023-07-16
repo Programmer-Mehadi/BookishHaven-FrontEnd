@@ -1,20 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface wishlistSlice {
-  futureList: [];
-  currentList: [];
+  wishList: [];
 }
 
 const initialState: wishlistSlice = {
-  futureList: [],
-  currentList: [],
+  wishList: [],
 };
 
 const wishlistSlice = createSlice({
   name: "wishlist",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setWishList: (state, action) => {
+      state.wishList = action.payload.wishList;
+    },
+  },
 });
-export const {} = wishlistSlice.actions;
+export const { setWishList } = wishlistSlice.actions;
 
 export default wishlistSlice.reducer;

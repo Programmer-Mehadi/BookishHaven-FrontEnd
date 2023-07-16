@@ -66,6 +66,20 @@ export const api = createApi({
         url: `/review/all-reviews/${bookId as string}`,
       }),
     }),
+    createWishList: builder.mutation({
+      query: (data) => ({
+        url: `/wish-list/create-wish-list`,
+        method: "POST",
+        body: { data: data as object },
+      }),
+    }),
+    getAllWishList: builder.mutation({
+      query: (id) => ({
+        url: `/wish-list/all-wish-lists`,
+        method: "POST",
+        body: { id: id as string },
+      }),
+    }),
   }),
 });
 
@@ -79,5 +93,7 @@ export const {
   useEditBookMutation,
   useGetSingleBookQuery,
   useCreateReviewMutation,
-  useGetAllReviewsByIdQuery
+  useGetAllReviewsByIdQuery,
+  useCreateWishListMutation,
+  useGetAllWishListMutation,
 } = api;

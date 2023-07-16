@@ -7,6 +7,7 @@ import {
 } from "../redux/api/apiSlice";
 import { toast } from "react-toastify";
 import { setReviewsList } from "../redux/features/reviews/reviewsSlice";
+import { Link } from "react-router-dom";
 
 const ReviewComponent = ({ id }) => {
   const [reviews, setReviews] = useState("");
@@ -46,7 +47,6 @@ const ReviewComponent = ({ id }) => {
           toast.error("Something went wrong");
         }
       });
-    
     } else {
       toast.error("Please fill all the fields");
     }
@@ -65,11 +65,12 @@ const ReviewComponent = ({ id }) => {
             className="rounded-[8px] text-base font-medium p-2"
             onChange={(e) => setReviews(e.target.value)}
             value={reviews}
+            disabled={token === "" ? true : false}
           ></textarea>
           {token && user ? (
             <button
               type="button"
-              className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 w-fit"
+              className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300  rounded-lg  px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 w-fit font-semibold text-lg"
               onClick={(e) => {
                 handleSubmit(e);
               }}
@@ -77,12 +78,13 @@ const ReviewComponent = ({ id }) => {
               Add Review
             </button>
           ) : (
-            <button
+            <Link
+              to="/signin"
               type="button"
               className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-green-800 w-fit"
             >
               Please SignIn
-            </button>
+            </Link>
           )}
         </div>
       </div>
@@ -107,6 +109,9 @@ const ReviewComponent = ({ id }) => {
                   </h4>
                 </div>
               ))}
+            {reviewsList && reviewsList.length === 0 && (
+              <h1 className="font-bold ">No Reviews</h1>
+            )}
           </div>
         </div>
       </div>

@@ -1,15 +1,65 @@
 import { Link } from "react-router-dom";
-import { useAppSelector } from "../redux/hook";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
+import { useState } from "react";
+import {
+  useCreateWishListMutation,
+  useGetAllWishListMutation,
+} from "../redux/api/apiSlice";
+import { toast } from "react-toastify";
+import { setWishList } from "../redux/features/wishlist/wishlistSlice";
 
 const BookCard = ({ book }) => {
   const date = new Date(book.publicationDate);
   const formattedDate = date.toLocaleDateString();
 
   const { user, token } = useAppSelector((state) => state.auth);
-
+  const [wishListValue, setWishListValue] = useState("");
+  const [createWishListMutation] = useCreateWishListMutation();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    useGetAllWishListMutation({
+      id: user._id,
+    }).then((res) => {
+      console.log(res?.data?.data);
+      dispatch(
+        setWishList({
+          wishList: res?.data?.data,
+        })
+      );
+    });
+  }, []);
+  const submitWishList = (e: React.FormEvent) => {
+    e.preventDefault();
+    setWishListValue(e.target.value);
+    if (token && user) {
+      createWishListMutation({
+        bookId: book._id,
+        userId: user._id,
+        text: e.target.value,
+      }).then((res) => {
+        if ("data" in res) {
+          if (res?.data?.data) {
+            toast.success(res?.data?.message);
+            getAllWishListMutation({
+              id: user._id,
+            }).then((res) => {
+              console.log(res?.data?.data);
+              dispatch(
+                setWishList({
+                  wishList: res?.data?.data,
+                })
+              );
+            });
+          }
+        } else {
+          toast.error(res?.data?.message);
+        }
+      });
+    }
+  };
   return (
     <div>
-      <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 h-full flex flex-col gap-5">
+      <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 min-h-full flex flex-col gap-5">
         <img
           className="rounded-t-lg h-52 w-full"
           src={book.image}
@@ -27,6 +77,25 @@ const BookCard = ({ book }) => {
             Publication Date: {formattedDate}
           </p>
           <div className="flex-1">
+            {token && user?._id && (
+              <select
+                name=""
+                id=""
+                className={` w-full rounded-[4px] px-2 py-1 mb-6`}
+                onChange={(e) => {
+                  submitWishList(e);
+                }}
+                value={wishListValue}
+              >
+                <option value="">Select a List</option>
+                <option value="futureList" className={wishListValue + ``}>
+                  Future List
+                </option>
+                <option value="currentList">Current List</option>
+                <option value="finishedList">Finished List</option>
+              </select>
+            )}
+
             <div className="flex items-end justify-between gap-5 h-full">
               {token && user && user._id === book.authorId && (
                 <Link
